@@ -1,6 +1,6 @@
-# course_epimutations
+# Análisis del epigenoma (paquete epimutacions)
 
 Curso: Técnicas ómicas en el diagnóstico de enfermedades raras
-Seminario: Análisis del epigenoma
+
 Ponentes: Laura Balagué, Xavier Escribà i Natàlia Carreras
 
