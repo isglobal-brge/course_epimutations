@@ -1,0 +1,507 @@
+---
+title: "The epimutacions User's Guide"
+author:
+- name: Leire Abarrategui
+  affiliation:
+  - Bioinformatics Research Group in Epidemiology (BRGE)
+  - Barcelona Insitute for Global Health (ISGlobal)
+  - Faculty of Medical Sciences, Newcastle University
+  - Autonomous University of Barcelona (UAB)
+  email: leire.abarrategui-martinez@newcastle.ac.uk
+- name: Carles Hernandez-Ferrer
+  affiliation:
+  - Centro Nacional de Análisis Genómico (CNAG-CRG), Center for Genomic Regulation
+  - Barcelona Institute of Science and Technology (BIST)
+  email: carles.hernandez@cnag.crg.eu
+- name: Carlos Ruiz-Arenas
+  affiliation:
+  - Centro de Investigación Biomédica en Red de Enfermedades Raras (CIBERER)
+  - Universitat Pompeu Fabra (UPF)
+  email: carlos.ruiza@upf.edu
+- name: Juan R. Gonzalez
+  affiliation:
+  - Bioinformatics Research Group in Epidemiology (BRGE), 
+  - Barcelona Insitute for Global Health (ISGlobal)
+  - Department of Mathematics, Autonomous University of Barcelona (UAB)
+  email: juanr.gonzalez@isglobal.org
+date: "`r Sys.Date()`"
+package: "`r pkg_ver('epimutacions')`"
+abstract: >
+
+    Las epimutaciones son alteraciones raras en el patrón de metilación de un 
+    loci específico. Aunque se sabe que pueden ser la causa de algunas
+    enfermedades genéticas, no existen métodos estandarizados para detectarlas
+    y cuantificarlas. 
+    
+    Esta vignette es una guía introductoria del paquete `epimutacions`.
+    El paquete incluye varios métodos de detección de outliers para
+    identificar epimutaciones en datos genómicos de metilación de ADN
+    provenientes de microarray. Las áreas que cubre este documento son:
+    (1) instalación del paquete; (2) carga y preprocesamiento de los datos; y
+    (3) identificación, anotación y visualización de las epimutaciones. 
+    
+output:
+  BiocStyle::html_document:
+    number_sections: true
+    toc: yes
+    fig_caption: yes
+    toc_float: true
+bibliography: refs.bib
+vignette: >
+  %\VignetteIndexEntry{Detection of epimutations with state of the art methods in methylation data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment="", 
+                      warning = FALSE, 
+                      message = FALSE,
+                      cache = FALSE)
+```
+
+
+# Introducción
+
+## Background
+
+Previamente al desarrollo de este paquete, existían dos enfoques distintos a la
+hora de abordar la detección de epimutaciones en datos de metilación de microarray:
+(1) primero identificar CpGs individualescon valores outlier y después
+clusterizarlos en epimutaciones [@barbosa2018identification];
+(2) primero definir regiones candidatas con el algoritmo bumphunter y después
+testear la significancia estadística con un MANOVA [@aref2019]. 
+Aunque estos dos métodos han sido definidos y usados, no están disponibles de
+manera pública y nunca se han comparado sus rendimientos. 
+
+Por eso, hemos desarrollado el paquete de R/Bioconductor `epimutacions`,
+que implementa estos dos enfoques (llamados `quantile` y `manova` respectivamente)
+además de 4 métodos adicionales. El primero, llamado `beta`, sigue la línea del 
+primer enfoque pero usa una distribución específica a la hora de detectar los
+outliers. Los otros 3, llamados `mlm`, `mahdist` e `iForest`, siguen el segundo
+enfoque pero aplican métodos distintos para evaluar la significancia estadística
+de las regiones. 
+
+Además, el paquete `epimutacions` proporciona herramientas para la normalización
+de los datos crudos de metilación de ADN de microarray, así como para la
+visualización y anotación de las epimutaciones. 
+
+
+## Metodología
+
+EL paquete `epimutacions` lleva a cabo un análisis genómico de metilación de ADN
+para identificar epimutaciones que podrían ser consideradas como biomarcadores en 
+aquellos pacientes que se sospeche que pueden estar sufriendo alguna enfermedad
+genética.
+
+Para estudios con un diseño caso-control, se debe usar la función `epimutacions`
+que compara cada muestra caso contra un panel de referencia (individuos sanos).
+Si por el contrario, sólo se dispone de muestras caso, se debe usar la 
+función `epimutations_one_leave_out()`, que compara cada muestra caso contra todas
+las demás, que se usan como control. 
+Independientemente de la función que usemos, podremos aplicar cualquiera de los
+métodos anteriormente mencionados, que son:
+(1) Análisis Multivariado de Varianza (`manova`), 
+(2) Modelo Lineal Multivariante (`mlm`), (3) Isolation Forest (`iForest`), 
+(4) Distancia robusta de Mahalanobis (`mahdist`) (5) `quantile` y (6) `beta`.
+
+
+Los métodos `quantile` y `beta` comparan los valores de metilación de cada
+CpG con la referencia y después clusterizan los significativos en epimutaciones. 
+Para indentificar los CpG outliers, `quantile` usa un sliding window, mientras
+que `beta` aplica una distribución beta. Definimos una epimutación como una
+ventana consecutiva de al menos 3 CpGs outliers con una distancia máxima entre
+ellos de 1kb [@barbosa2018identification].
+
+Por otro lado, `manova`, `mlm`, `iForest` y  `mahdist` definen primero las regiones
+candidatas (regiones diferencialmente metiladas (DMRs)) con el algoritmo 
+bumphubter[@jaffe2012bump] y después comprueban si en estas DMRs hay suficientes
+CpGs outliers.
+
+
+
+```{r implementation, echo=FALSE, fig.cap= "Implementation of each outlier detection method", out.width = '90%', fig.align='center'}
+knitr::include_graphics("fig/implementation.png")
+```
+
+
+# Setup
+
+## Instalación de los paquetes
+
+Necesitamos instalar `epimutacions` y `epimutacionsData`
+
+```{r, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("epimutacions")
+```
+
+```{r, eval = FALSE}
+BiocManager::install("epimutacionsData")
+```
+
+## Carga de las librerías
+
+```{r, message = FALSE}
+library(epimutacions)
+```
+
+## Inicio Rápido
+
+La figura \@ref(fig:workflow) explica los principales análisis del paquete.
+
+En líneas generales, podemos proporcionar dos tipos de input:
+
+* (1) Objeto `GenomicRatioSet` con todos los individuos (sólo casos o casos + controles). 
+
+* (2) Datos crudos de casos + Panel de referencia. Los casos como ficheros `IDAT`
+  y el panel de referencia, bien como un objeto `RGChannelSet` o bien
+  seleccionando alguno de los que el paquete proporciona como ejemplo 
+  (section \@ref(datasets)). 
+  Después deberemos hacer un preprocesamiento con la función 
+  `epi_preprocess()`para obtener un objeto `GenomicRatioSet`.
+
+El objeto `GenomicRatioSet` es el que se usa como input de las funciones
+principales `epimutations()` (para estudios caso-control) o
+`epimutations_one_leave_out()` (para estudios con sólo casos).
+
+
+```{r workflow, echo=FALSE, fig.cap="Allowed data formats, normalization and input types", out.width = '90%', fig.align='center'}
+knitr::include_graphics("fig/workflow.png")
+```
+
+
+# Dataset {#datasets}
+
+El paquete contiene un dataset de prueba llamado `methy`. Se trata de un objeto
+`GenomicRatioSet` que incluye 49 controles [(GEO: GSE104812)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104812)
+y 3 casos [(GEO: GSE97362)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi).
+
+Podemos acceder al dataset de la siguiente manera:
+
+```{r}
+library(ExperimentHub)
+eh <- ExperimentHub()
+query(eh, c("epimutacionsData"))
+methy <- eh[["EH6690"]]
+```
+
+A parte, tenemos un `GenomicRatioSet` que sólo contiene muestras de casos,
+lo podemos cargar así:
+
+```{r}
+data(GRset)
+```
+
+
+# Preprocesamiento
+
+Cómo nuestros datos ya están preprocesados, este paso no hará falta. 
+
+Si tuviesemos datos crudos, la función `epi_preprocess()` permite usar
+cualquiera de los 6 métodos de prepocesamiento del paquete `minfi`. Para ello, 
+debemos tener todos los ficheros `IDAT` en un mismo directorio.a función se
+usa de la siguiente manera:
+
+```{r eval = FALSE}
+Dataset_procesado <- epi_preprocess(directorio, 
+                                  panel_referencia, 
+                                  pattern = "SampleSheet.csv")
+```
+
+
+
+# Epimutations
+
+## Detección de epimutaciones
+
+### Diseño caso-control
+
+Primero usaremos el dataset `methy` (section \@ref(methy)) que contiene muestras
+de casos y controles. Por lo tanto, usaremos la función `epimutations`.
+Podemos escoger cualquiera de los 6 métodos implementados en el paquete:
+(1) Análisis Multivariado de Varianza (`manova`), 
+(2) Modelo Lineal Multivariante (`mlm`), (3) Isolation Forest (`iForest`), 
+(4) Distancia robusta de Mahalanobis (`mahdist`) (5) `quantile` y (6) `beta`.
+
+Para empezar, cogemos el dataset y separamos los casos de los controles:
+
+```{r}
+case_samples <- methy[,methy$status == "case"]
+control_samples <- methy[,methy$status == "control"]
+```
+
+Usaremos el método `manova`. Si quisiéramos, podríamos especificar el cromosoma
+o la región a analizar para reducir el tiempo de ejecución:
+
+```{r,  epi_mvo, message=FALSE, warning=FALSE}
+epi_mvo <- epimutations(case_samples, 
+                        control_samples, 
+                        method = "manova")
+```
+
+
+### Diseño sólo casos
+
+Para analizar el dataset que sólo contiene muestras de casos `GRset`, usaremos
+la función `epimutations_one_leave_out()`. En este caso no hace falta dividir el
+dataset, simplemente corremos la función:
+
+
+```{r eval = FALSE}
+epi_mva_one_leave_out<- epimutations_one_leave_out(GRset,
+                                                   method = 'manova')
+```
+
+
+## Parámetros
+
+Cada método de detección tiene sus propios parámetros. Los podemos modificar
+mediante la función `epi_parameters()`. Si la corremos sin argumentos, nos 
+muestra una lista de los parámetros por defecto:
+
+```{r}
+epi_parameters()
+```
+
+Los nombres de los parámetros modificables se encuentran en esta tabla:
+
+```{r echo = FALSE}
+library(kableExtra)
+df <- data.frame(Método = c("Manova, mlm", 
+                            rep("iso.forest", 2), 
+                            "mahdist.mcd", 
+                            rep("quantile", 2), 
+                            rep("beta",2)), 
+                 Parámetros = c("pvalue_cutoff", 
+                                "outlier_score_cutoff", 
+                                "ntrees", "nsamp", 
+                                "window_sz", 
+                                "offset_mean/offset_abs", 
+                                "pvalue_cutoff",
+                                "diff_threshold"),
+                 Descripción = c("El p-valor umbral para determinar qué regiones CpG son outliers", 
+                                 "El umbral para determinar qué regiones CpG son outliers",
+                                 "El número de árboles binarios que se deben construir para el modelo",
+                                 "El número de subgrupos usados para las estimaciones iniciales del MCD",
+                                 "La distancia máxima entre CpGs para que se consideren dentro de la misma DMR",
+                                 "El umbral superior e inferior para considerar un CpG como outlier",
+                                 "El p-valor mínimo para considerar un CpG como outlier",
+                                 "La diferencia de metilación mínima entre el CpG y la media para considerar una posición como outlier"))
+kable(df[,2:3]) %>% 
+  pack_rows(index = c("Manova, mlm" = 1,
+                      "iso.forest" = 2,
+                      "mahdist.mcd" = 1,
+                      "quantile" = 2, 
+                      "beta" = 2))
+```
+
+
+Si quisiéramos cambiar algun parámetro, se puede hacer utilizando los argumentos
+que vemos en la tabla. Por ejemplo, para modificar el p-valor de corte de manova:
+
+```{r}
+parameters <- epi_parameters(manova = list("pvalue_cutoff" = 0.01))
+parameters$manova$pvalue_cutoff
+```
+
+
+## Descripción de los resultados:
+
+Las funciones `epimutations` y `epimutations_one_leave_out()` devuelven un
+data frame con todas las epimutaciones que se hayan detectado y los siguientes
+argumentos:
+
+
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| Column name           | Description                                                                                                           |
++=======================+=======================================================================================================================+
+| `epi_id`              | Nombre sistemático de cada una de las epimutaciones detectadas                                                        |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `sample`              | Nombre de la muestra en la que se ha encontrado la epimutación                                                        |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `chromosome`          | La localización de la epimutación                                                                                     |
+|`start`                |                                                                                                                       |
+|`end`                  |                                                                                                                       |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `sz`                  | La medida de la ventana                                                                                               |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `cpg_ids`             | El número de CpGs en la epimutación                                                                                   |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `cpg_n`               | Los nombres de los CpGs de la epimutación                                                                             |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `outlier_score`       | En el método `manova` proporciona la aproximación al F-test y el score de Pillai, separados por `/`<br>               |
+|                       | En el método `mlm` proporciona la aproximación al F-test y la R2 del modelo, separados por `/`<br>                    |
+|                       | En el método `iForest` proporciona la magnitud del score del outlier.<br>                                             |
+|                       | En el método `beta` proporciona la media de p-valores de los CpGs de la DMR en cuestión.<br>                          |
+|                       | En los métodos `quantile` y `mahdist` se rellena con `NA`.                                                            |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `pvalue`              | En los métodos `manova` y  `mlm` proporciona el p-valor obtenido del modeo.<br>                                       |
+|                       | En los métodos `quantile`, `iForest`, `beta` y `mahdist` se rellena con `NA`.                                         |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+ 
+| `outlier_direction`   | Indica la dirección del outlier con "hypomethylation" y "hypermethylation".<br>                                       | 
+|                       | En `manova`, `mlm`, `iForest`, y `mahdist` se calcula a partir de los valores obtenidos de `bumphunter`.<br>           |
+|                       | En `beta` se calcula con el p-valor de cada CpG usando `diff_threshold` y `pvalue_threshold`.<br>                     |
+|                       | En `quantile` se calcula a partir de la localización de la muestra en la distribución de la referencia (outlier por la derecha vs. outlier por la izquierda).  |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `adj_pvalue`          | En los métodos `manova` y  `mlm` proporcinoa el p-valor ajustado con                                                  |
+|                       | Benjamini-Hochberg basado en el número total de regiones detectadas por `bumphunter`.<br>                             |
+|                       | En los métodos `quantile`, `iForest`, `mahdist` y `beta` se rellena con `NA`.                                         |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+ 
+| `epi_region_id`       | Nombre de la epimutación tal y como esté definido en `candRegsGR`.                                                    |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `CRE`                 | cREs (cis-Regulatory Elements) definidos por ENCODE que se superponen con la región de la epimutación.                |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `CRE_type`            | Tipos de cREs (cis-Regulatory Elements) definidos por ENCODE.                                                         |
++-----------------------+-----------------------------------------------------------------------------------------------------------------------+
+
+A modo de ejemplo, vamos a visualizar los resultados que hemos obtenido con el 
+método ANOVA y la función `epimutations` (diseño caso-control) - (`epi_mvo`):
+
+```{r}
+dim(epi_mvo)
+class(epi_mvo)
+head(as.data.frame(epi_mvo), 12)
+epi_mvo[c(10:15),c(12)] <- epi_mvo[c(10:15),c(12)]*10
+as.data.frame(epi_mvo)[c(10:15),c(1,7,11,12)]
+
+kableExtra::kable(
+    epi_mvo[ 9, c(1,2, 7, 10,11,12)],
+    row.names = FALSE ) %>%  column_spec(1:6, width = "4cm")
+
+epi_mvo[epi_mvo$adj_pvalue>0.02,]
+```
+
+
+## Anotación de las epimutaciones
+
+La función `annotate_epimutations()` lleva a cabo un enriquecimiento de las 
+epimutaciones que se hayan detectado. Aporta información sobre:
+
+```{r annot, eval = TRUE}
+rst_mvo <- annotate_epimutations(epi_mvo, omim = FALSE)
+```
+
+
++---------------------------+-----------------------------------------------------------------------------------------+
+| Column name               | Description                                                                             |
++===========================+=========================================================================================+
+| `GencodeBasicV12_NAME`    | Nombres de los genes en GENECODE                                                        |
++---------------------------+-----------------------------------------------------------------------------------------+
+| `Regulatory_Feature_Group`| Descripción del Methylation Consortium sobre la región reguladora                       |
++---------------------------+-----------------------------------------------------------------------------------------+
+| `Relation_to_Island`      | Localización del CpG en relación a la isla de CpGs                                      |
++---------------------------+-----------------------------------------------------------------------------------------+
+| `OMIM_ACC` \              | Número de acceso y descripción de OMIM                                                  |
+| `OMIM_DESC`               |                                                                                         |
++---------------------------+-----------------------------------------------------------------------------------------+
+| `ensembl_reg_id` \        | ID de la región, coordenadas, tipo y tejido, de Ensembl                                 |
+|`ensembl_reg_coordinates`\ |                                                                                         |
+|`ensembl_reg_type`\        |                                                                                         |
+|`ensembl_reg_tissues`      |                                                                                         |
++---------------------------+-----------------------------------------------------------------------------------------+
+
+Podemos visualizar algunas anotacinoes de la siguiente manera:
+
+```{r annot_relIsland, eval = TRUE}
+kableExtra::kable(
+    rst_mvo[ c(27,32) ,c("epi_id", "cpg_ids", "Relation_to_Island")],
+    row.names = FALSE) %>% column_spec(1:3, width = "4cm")
+```
+
+```{r annot_omim, eval = FALSE}
+kableExtra::kable(
+    rst_mvo[ c(4,8,22) , c("epi_id", "OMIM_ACC", "OMIM_DESC")],
+    row.names = FALSE ) %>% column_spec(1:3, width = "4cm")
+    
+```
+
+```{r annot_ensembl, eval = TRUE}
+kableExtra::kable(
+    rst_mvo[ c(1:5), c("epi_id", "ensembl_reg_id", "ensembl_reg_type")],
+    row.names = FALSE ) %>%  column_spec(1:3, width = "4cm")
+
+kableExtra::kable(
+    rst_mvo[ c(1:5), c("GencodeBasicV12_NAME", "epi_id", "ensembl_reg_id", "ensembl_reg_type")],
+    row.names = FALSE ) %>%  column_spec(1:3, width = "4cm")
+
+```
+
+## Visualización de las epimutaciones
+
+La función `plot_epimutations()` dibuja una epimutación en su contexto genómico,
+con los valores de metilación del caso en rojo, los de los controles en líneas
+negras discontínuas y la media de la población en azul:
+
+```{r plot_default}
+plot_epimutations(as.data.frame(epi_mvo[15,]), methy)
+```
+
+Si ponemos el argumento `gene_annot == TRUE`, el gráfico incluye también las
+anotaciones génicas:
+
+```{r, plot_mvo_genes_annot}
+p <- plot_epimutations(as.data.frame(epi_mvo[1,]), 
+                       methy = methy, 
+                       genes_annot = TRUE)
+```
+
+```{r plot_genes_annot, results='asis', fig.align = "center", fig.height=12 }
+plot(p)
+
+```
+
+Para graficar las marcas de cromatina H3K4me3, H3K27me3 y H3K27ac, especifcamos
+el argumento `regulation = TRUE`:
+
+
+* **H3K4me3**: comunmente asociada con la activación de la transcripción de
+genes cercanos.
+* **H3K27me3**: usada en epigenética para detectar genes inactivos.
+* **H3K27ac**: asociada con una gran activación de la transcripción y, por
+lo tanto, definida con una marca de enhancer activador.
+
+
+```{r, plot_mvo_regulation}
+p <- plot_epimutations(as.data.frame(epi_mvo[1,]), 
+                       methy =  methy, 
+                       regulation = TRUE)
+```
+
+```{r plot_genes_regulation, results='asis', fig.align = "center", fig.height=12 }
+plot(p)
+
+```
+
+# Agradecimientos
+
+Los autores quieren dar las gracias al equipo que colaboró en el diseño inicial
+del paquete en el BioHackaton Europeo de 2020:
+Lordstrong Akano, James Baye, Alejandro Caceres, Pavlo Hrab, 
+Raquel Manzano y Margherita Mutarelli. 
+Los autores también quieren agradecer el apoyo de la organización del 
+BioHackaton Europeo de 2020.
+
+Todos los miembros del equipo del *Project #5* que han conribuido a este paquete:  
+
+| Name | Surname | ORCID | Affiliation | Team |
+|:-----|:--------|:-----:|:------------|:-----|
+| Leire | Abarrategui | 0000-0002-1175-038X | Faculty of Medical Sciences, Newcastle University, Newcastle-Upon-Tyne, UK; Autonomous University of Barcelona (UAB), Barcelona, Spain | Development |
+| Lordstrong | Akano | 0000-0002-1404-0295 | College of Medicine, University of Ibadan | Development |
+| James | Baye | 0000-0002-0078-3688 | Wellcome/MRC Cambridge Stem Cell Institute, University of Cambridge, Cambridge CB2 0AW, UK; Department of Physics, University of Cambridge, Cambridge CB2 3DY, UK | Development |
+| Alejandro | Caceres | - | ISGlobal, Barcelona Institute for Global Health, Dr Aiguader 88, 08003 Barcelona, Spain; Centro de Investigación Biomédica en Red en Epidemiología y Salud Pública (CIBERESP), Madrid, Spain | Development |
+| Carles | Hernandez-Ferrer | 0000-0002-8029-7160 | Centro Nacional de Análisis Genómico (CNAG-CRG), Center for Genomic, Regulation; Barcelona Institute of Science and Technology (BIST), Barcelona, Catalonia, Spain | Development |
+| Pavlo | Hrab | 0000-0002-0742-8478 | Department of Genetics and Biotechnology, Biology faculty, Ivan Franko National University of Lviv | Validation |
+| Raquel | Manzano | 0000-0002-5124-8992 | Cancer Research UK Cambridge Institute; University of Cambridge, Cambridge, United Kingdom | Reporting |
+| Margherita | Mutarelli | 0000-0002-2168-5059 | Institute of Applied Sciences and Intelligent Systems (ISASI-CNR) | Validation |
+| Carlos | Ruiz-Arenas | 0000-0002-6014-3498 | Centro de Investigación Biomédica en Red de Enfermedades Raras (CIBERER), Barcelona, Spain; Universitat Pompeu Fabra (UPF), Barcelona, Spain | Reporting |
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
+# Referencias
