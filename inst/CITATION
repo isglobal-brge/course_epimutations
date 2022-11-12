@@ -1,0 +1,10 @@
+citHeader("To cite lubridate in publications use:")
+
+citEntry(entry = "Manual",
+title        = "epimutacions: Robust outlier identification for DNA methylation data",
+author       = "Dolors Pelegri-Siso and Juan R. Gonzalez and Carlos Ruiz-Arenas and Carles Hernandez-Ferrer and Leire Abarrategui",
+year = "2022",
+note = "R package version 1.2.0",
+url = "https://github.com/isglobal-brge/epimutacions",
+
+textVersion  = "Pelegri-Siso D, Gonzalez J, Ruiz-Arenas C, Hernandez-Ferrer C, Abarrategui L (2022). epimutacions: Robust outlier identification for DNA methylation data. R package version 1.2.0, https://github.com/isglobal-brge/epimutacions.")
