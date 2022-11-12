@@ -1,0 +1,10 @@
+pandoc: '2.18'
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  epimutacions_cast: epimutacions_cast.html
+last_built: 2022-11-12T20:13Z
+urls:
+  reference: https://github.com/isglobal-brge/course_epimutations/reference
+  article: https://github.com/isglobal-brge/course_epimutations/articles
+

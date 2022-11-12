@@ -1,0 +1,5 @@
+template:
+  package: dstemplate
+  bootstrap: 5
+
+url: https://github.com/isglobal-brge/course_epimutations
