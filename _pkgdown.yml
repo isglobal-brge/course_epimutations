@@ -19,3 +19,11 @@ code:
 navbar:
   type: light
   bg: none
+  components:
+    articles:
+      text: User guides
+      menu:
+        - text: Epimutacions
+          href: articles/epimutacions_cast.html
+    reference:
+
