@@ -6,4 +6,4 @@ Este seminario forma parte del curso "Técnicas ómicas en el diagnóstico de en
 + [Diapositivas]()
 + [Archivo .R]()
 
-<img src="man/figures/marato.jpg" align="right" >
+<img src="man/figures/marato.png" align="right" >

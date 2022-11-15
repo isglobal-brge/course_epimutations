@@ -509,43 +509,56 @@ de corte de manova:</p>
 <code><a href="https://rdrr.io/pkg/epimutacions/man/epimutations_one_leave_out.html" class="external-link">epimutations_one_leave_out()</a></code> devuelven un data frame con
 todas las epimutaciones que se hayan detectado y los siguientes
 argumentos:</p>
-<table class="table">
+<table style="width:99%;" class="table">
 <colgroup>
-<col width="16%">
-<col width="83%">
+<col width="12%">
+<col width="64%">
+<col width="22%">
 </colgroup>
-<thead><tr class="header">
-<th>Column name</th>
-<th>Description</th>
-</tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>epi_id</code></td>
-<td>Nombre sistemático de cada una de las epimutaciones detectadas</td>
+<td rowspan="2">
+<h2 id="column-name">Column name</h2>
+<p><code>epi_id</code></p>
+</td>
+<td rowspan="2">
+<h2 id="description">Description</h2>
+<p>Nombre sistemático de cada una de las epimutaciones
+detectadas</p>
+</td>
+<td></td>
 </tr>
 <tr class="even">
-<td><code>sample</code></td>
-<td>Nombre de la muestra en la que se ha encontrado la epimutación</td>
+<td></td>
 </tr>
 <tr class="odd">
+<td><code>sample</code></td>
+<td>Nombre de la muestra en la que se ha encontrado la epimutación</td>
+<td></td>
+</tr>
+<tr class="even">
 <td>
 <code>chromosome</code> <code>start</code> <code>end</code>
 </td>
 <td>La localización de la epimutación</td>
+<td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>sz</code></td>
 <td>La medida de la ventana</td>
-</tr>
-<tr class="odd">
-<td><code>cpg_ids</code></td>
-<td>El número de CpGs en la epimutación</td>
+<td></td>
 </tr>
 <tr class="even">
-<td><code>cpg_n</code></td>
-<td>Los nombres de los CpGs de la epimutación</td>
+<td><code>cpg_ids</code></td>
+<td>El número de CpGs en la epimutación</td>
+<td></td>
 </tr>
 <tr class="odd">
+<td><code>cpg_n</code></td>
+<td>Los nombres de los CpGs de la epimutación</td>
+<td></td>
+</tr>
+<tr class="even">
 <td><code>outlier_score</code></td>
 <td>En el método <code>manova</code> proporciona la aproximación al
 F-test y el score de Pillai, separados por <code>/</code><br> En el
@@ -555,46 +568,53 @@ del modelo, separados por <code>/</code><br> En el método
 En el método <code>beta</code> proporciona la media de p-valores de los
 CpGs de la DMR en cuestión.<br> En los métodos <code>quantile</code> y
 <code>mahdist</code> se rellena con <code>NA</code>.</td>
+<td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>pvalue</code></td>
 <td>En los métodos <code>manova</code> y <code>mlm</code> proporciona el
 p-valor obtenido del modeo.<br> En los métodos <code>quantile</code>,
 <code>iForest</code>, <code>beta</code> y <code>mahdist</code> se
 rellena con <code>NA</code>.</td>
-</tr>
-<tr class="odd">
-<td><code>outlier_direction</code></td>
-<td>Indica la dirección del outlier con “hypomethylation” y
-“hypermethylation”.<br> En <code>manova</code>, <code>mlm</code>,
-<code>iForest</code>, y <code>mahdist</code> se calcula a partir de los
-valores obtenidos de <code>bumphunter</code>.<br> En <code>beta</code>
-se calcula con el p-valor de cada CpG usando <code>diff_threshold</code>
-y <code>pvalue_threshold</code>.<br> En <code>quantile</code> se calcula
-a partir de la localización de la muestra en la distribución de la
-referencia (outlier por la derecha vs. outlier por la izquierda).</td>
+<td></td>
 </tr>
 <tr class="even">
+<td><code>outlier_direction</code></td>
+<td colspan="2">Indica la dirección del outlier con “hypomethylation” y
+“hypermethylation”.<br> | En <code>manova</code>, <code>mlm</code>,
+<code>iForest</code>, y <code>mahdist</code> se calcula a partir de los
+valores obtenidos de <code>bumphunter</code>.<br> | En <code>beta</code>
+se calcula con el p-valor de cada CpG usando <code>diff_threshold</code>
+y <code>pvalue_threshold</code>.<br> | En <code>quantile</code> se
+calcula a partir de la localización de la muestra en la distribución de
+la referencia (outlier por la derecha vs. outlier por la
+izquierda).</td>
+</tr>
+<tr class="odd">
 <td><code>adj_pvalue</code></td>
 <td>En los métodos <code>manova</code> y <code>mlm</code> proporcinoa el
 p-valor ajustado con Benjamini-Hochberg basado en el número total de
 regiones detectadas por <code>bumphunter</code>.<br> En los métodos
 <code>quantile</code>, <code>iForest</code>, <code>mahdist</code> y
 <code>beta</code> se rellena con <code>NA</code>.</td>
+<td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>epi_region_id</code></td>
 <td>Nombre de la epimutación tal y como esté definido en
 <code>candRegsGR</code>.</td>
+<td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>CRE</code></td>
 <td>cREs (cis-Regulatory Elements) definidos por ENCODE que se
 superponen con la región de la epimutación.</td>
+<td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>CRE_type</code></td>
 <td>Tipos de cREs (cis-Regulatory Elements) definidos por ENCODE.</td>
+<td></td>
 </tr>
 </tbody>
 </table>
