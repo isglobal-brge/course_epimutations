@@ -102,7 +102,7 @@ Autonomous University of Barcelona
 (UAB)<br><a class="author_email" href="mailto:#"></a><a href="mailto:juanr.gonzalez@isglobal.org" class="email">juanr.gonzalez@isglobal.org</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2022-11-12</h4>
+            <h4 data-toc-skip class="date">2022-11-15</h4>
       
       
       <div class="d-none name"><code>epimutacions_cast.Rmd</code></div>
@@ -132,7 +132,7 @@ Autonomous University of Barcelona
 </h3>
 <p>Previamente al desarrollo de este paquete, existían dos enfoques
 distintos a la hora de abordar la detección de epimutaciones en datos de
-metilación de microarray: (1) primero identificar CpGs individualescon
+metilación de microarray: (1) primero identificar CpGs individuales con
 valores outlier y después clusterizarlos en epimutaciones <span class="citation">(Barbosa et al. 2018)</span>; (2) primero definir
 regiones candidatas con el algoritmo bumphunter y después testear la
 significancia estadística con un MANOVA <span class="citation">(Aref-Eshghi et al. 2019)</span>. Aunque estos dos
@@ -169,7 +169,7 @@ la función que usemos, podremos aplicar cualquiera de los métodos
 anteriormente mencionados, que son: (1) Análisis Multivariado de
 Varianza (<code>manova</code>), (2) Modelo Lineal Multivariante
 (<code>mlm</code>), (3) Isolation Forest (<code>iForest</code>), (4)
-Distancia robusta de Mahalanobis (<code>mahdist</code>) (5)
+Distancia robusta de Mahalanobis (<code>mahdist</code>), (5)
 <code>quantile</code> y (6) <code>beta</code>.</p>
 <p>Los métodos <code>quantile</code> y <code>beta</code> comparan los
 valores de metilación de cada CpG con la referencia y después
@@ -182,7 +182,7 @@ et al. 2018)</span>.</p>
 <p>Por otro lado, <code>manova</code>, <code>mlm</code>,
 <code>iForest</code> y <code>mahdist</code> definen primero las regiones
 candidatas (regiones diferencialmente metiladas (DMRs)) con el algoritmo
-bumphubter<span class="citation">(Jaffe et al. 2012)</span> y después
+bumphunter <span class="citation">(Jaffe et al. 2012)</span> y después
 comprueban si en estas DMRs hay suficientes CpGs outliers.</p>
 <div class="figure" style="text-align: center">
 <img src="fig/implementation.png" alt="Implementation of each outlier detection method" width="90%"><p class="caption">
@@ -228,7 +228,7 @@ casos o casos + controles).</li>
 <li>Datos crudos de casos + Panel de referencia. Los casos como ficheros
 <code>IDAT</code> y el panel de referencia, bien como un objeto
 <code>RGChannelSet</code> o bien seleccionando alguno de los que el
-paquete proporciona como ejemplo (section @ref(datasets)). Después
+paquete proporciona como ejemplo (sección @ref(datasets)). Después
 deberemos hacer un preprocesamiento con la función
 <code><a href="https://rdrr.io/pkg/epimutacions/man/epi_preprocess.html" class="external-link">epi_preprocess()</a></code>para obtener un objeto
 <code>GenomicRatioSet</code>.</li>
@@ -274,7 +274,7 @@ GSE97362)</a>.</p>
   EH6692 | Candidate epimutations  </code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">methy</span> <span class="op">&lt;-</span> <span class="va">eh</span><span class="op">[[</span><span class="st">"EH6690"</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p>A parte, tenemos un <code>GenomicRatioSet</code> que sólo contiene
+<p>Aparte, tenemos un <code>GenomicRatioSet</code> que sólo contiene
 muestras de casos, lo podemos cargar así:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">GRset</span><span class="op">)</span></span></code></pre></div>
@@ -282,12 +282,12 @@ muestras de casos, lo podemos cargar así:</p>
 <div class="section level2">
 <h2 id="preprocesamiento">Preprocesamiento<a class="anchor" aria-label="anchor" href="#preprocesamiento"></a>
 </h2>
-<p>Cómo nuestros datos ya están preprocesados, este paso no hará
+<p>Como nuestros datos ya están preprocesados, este paso no hará
 falta.</p>
-<p>Si tuviesemos datos crudos, la función <code><a href="https://rdrr.io/pkg/epimutacions/man/epi_preprocess.html" class="external-link">epi_preprocess()</a></code>
+<p>Si tuviésemos datos crudos, la función <code><a href="https://rdrr.io/pkg/epimutacions/man/epi_preprocess.html" class="external-link">epi_preprocess()</a></code>
 permite usar cualquiera de los 6 métodos de prepocesamiento del paquete
 <code>minfi</code>. Para ello, debemos tener todos los ficheros
-<code>IDAT</code> en un mismo directorio.a función se usa de la
+<code>IDAT</code> en un mismo directorio. La función se usa de la
 siguiente manera:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Dataset_procesado</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/epi_preprocess.html" class="external-link">epi_preprocess</a></span><span class="op">(</span><span class="va">directorio</span>, </span>
@@ -303,14 +303,15 @@ siguiente manera:</p>
 <div class="section level4">
 <h4 id="diseño-caso-control">Diseño caso-control<a class="anchor" aria-label="anchor" href="#dise%C3%B1o-caso-control"></a>
 </h4>
-<p>Primero usaremos el dataset <code>methy</code> (section @ref(methy))
-que contiene muestras de casos y controles. Por lo tanto, usaremos la
-función <code>epimutations</code>. Podemos escoger cualquiera de los 6
-métodos implementados en el paquete: (1) Análisis Multivariado de
-Varianza (<code>manova</code>), (2) Modelo Lineal Multivariante
-(<code>mlm</code>), (3) Isolation Forest (<code>iForest</code>), (4)
-Distancia robusta de Mahalanobis (<code>mahdist</code>) (5)
-<code>quantile</code> y (6) <code>beta</code>.</p>
+<p>Primero usaremos el dataset <code>methy</code> (sección
+@ref(datasets)) que contiene muestras de casos y controles. Por lo
+tanto, usaremos la función <code>epimutations</code>. Podemos escoger
+cualquiera de los 6 métodos implementados en el paquete: (1) Análisis
+Multivariado de Varianza (<code>manova</code>), (2) Modelo Lineal
+Multivariante (<code>mlm</code>), (3) Isolation Forest
+(<code>iForest</code>), (4) Distancia robusta de Mahalanobis
+(<code>mahdist</code>), (5) <code>quantile</code> y (6)
+<code>beta</code>.</p>
 <p>Para empezar, cogemos el dataset y separamos los casos de los
 controles:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -332,7 +333,7 @@ de ejecución:</p>
 <code><a href="https://rdrr.io/pkg/epimutacions/man/epimutations_one_leave_out.html" class="external-link">epimutations_one_leave_out()</a></code>. En este caso no hace falta
 dividir el dataset, simplemente corremos la función:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">epi_mva_one_leave_out</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/epimutations_one_leave_out.html" class="external-link">epimutations_one_leave_out</a></span><span class="op">(</span><span class="va">GRset</span>,</span>
+<code class="sourceCode R"><span><span class="va">epi_mvo_one_leave_out</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/epimutations_one_leave_out.html" class="external-link">epimutations_one_leave_out</a></span><span class="op">(</span><span class="va">GRset</span>,</span>
 <span>                                                   method <span class="op">=</span> <span class="st">'manova'</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -598,8 +599,8 @@ superponen con la región de la epimutación.</td>
 </tbody>
 </table>
 <p>A modo de ejemplo, vamos a visualizar los resultados que hemos
-obtenido con el método ANOVA y la función <code>epimutations</code>
-(diseño caso-control) - (<code>epi_mvo</code>):</p>
+obtenido con el método ANOVA y la función <code>epimutations</code> -
+Diseño caso-control, objeto <code>epi_mvo</code>:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">epi_mvo</span><span class="op">)</span></span></code></pre></div>
 <pre><code>[1] 51 16</code></pre>
@@ -687,76 +688,14 @@ obtenido con el método ANOVA y la función <code>epimutations</code>
 11                                                                                                                                                           dELS;dELS,CTCF-bound
 12                                                                                                                                                            PLS,CTCF-bound;pELS</code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">epi_mvo</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">epi_mvo</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span><span class="op">*</span><span class="fl">10</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">epi_mvo</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">7</span>,<span class="fl">11</span>,<span class="fl">12</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">epi_mvo</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">7</span>,<span class="fl">11</span>,<span class="fl">12</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code>          epi_id cpg_n       pvalue   adj_pvalue
-10 epi_manova_10     3 2.159693e-04 1.187831e-01
-11 epi_manova_11     3 5.786402e-09 3.645433e-06
-12 epi_manova_12     3 3.659987e-06 2.195992e-03
-13 epi_manova_13     3 8.670808e-04 4.682236e-01
-14 epi_manova_14    11 1.383286e-07 1.037465e-04
-15 epi_manova_15     5 2.107632e-05 1.454266e-02</code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>    <span class="va">epi_mvo</span><span class="op">[</span> <span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>, <span class="fl">7</span>, <span class="fl">10</span>,<span class="fl">11</span>,<span class="fl">12</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>    row.names <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span> <span class="op">%&gt;%</span>  <span class="fu">column_spec</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, width <span class="op">=</span> <span class="st">"4cm"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr>
-<th style="text-align:left;">
-epi_id
-</th>
-<th style="text-align:left;">
-sample
-</th>
-<th style="text-align:right;">
-cpg_n
-</th>
-<th style="text-align:left;">
-outlier_direction
-</th>
-<th style="text-align:right;">
-pvalue
-</th>
-<th style="text-align:right;">
-adj_pvalue
-</th>
-</tr></thead>
-<tbody><tr>
-<td style="text-align:left;width: 4cm; ">
-epi_manova_9
-</td>
-<td style="text-align:left;width: 4cm; ">
-GSM2562699
-</td>
-<td style="text-align:right;width: 4cm; ">
-3
-</td>
-<td style="text-align:left;width: 4cm; ">
-hypermethylation
-</td>
-<td style="text-align:right;width: 4cm; ">
-7.47e-05
-</td>
-<td style="text-align:right;width: 4cm; ">
-0.0043317
-</td>
-</tr></tbody>
-</table>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">epi_mvo</span><span class="op">[</span><span class="va">epi_mvo</span><span class="op">$</span><span class="va">adj_pvalue</span><span class="op">&gt;</span><span class="fl">0.02</span>,<span class="op">]</span></span></code></pre></div>
-<pre><code> [38;5;246m# A tibble: 6 × 16 [39m
-  epi_id  sample chrom…¹  start    end    sz cpg_n cpg_ids outli…² outli…³
-   [3m [38;5;246m&lt;chr&gt; [39m [23m    [3m [38;5;246m&lt;chr&gt; [39m [23m   [3m [38;5;246m&lt;chr&gt; [39m [23m     [3m [38;5;246m&lt;int&gt; [39m [23m   [3m [38;5;246m&lt;int&gt; [39m [23m  [3m [38;5;246m&lt;int&gt; [39m [23m  [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m    [3m [38;5;246m&lt;chr&gt; [39m [23m    [3m [38;5;246m&lt;chr&gt; [39m [23m  
- [38;5;250m1 [39m epi_ma… GSM25… chr8    1.45 [38;5;246me [39m8 1.45 [38;5;246me [39m8   623     3 cg2546… 8.0282… hypome…
- [38;5;250m2 [39m epi_ma… GSM25… chr19   8.27 [38;5;246me [39m6 8.27 [38;5;246me [39m6   188     3 cg0668… 6.5923… hyperm…
- [38;5;250m3 [39m epi_ma… GSM25… chr7    1.55 [38;5;246me [39m8 1.55 [38;5;246me [39m8   746     5 cg1193… 5.8710… hyperm…
- [38;5;250m4 [39m epi_ma… GSM25… chr7    1.40 [38;5;246me [39m8 1.40 [38;5;246me [39m8   312     4 cg0824… 6.0014… hypome…
- [38;5;250m5 [39m epi_ma… GSM25… chr21   1.51 [38;5;246me [39m7 1.51 [38;5;246me [39m7   731     3 cg1229… 7.2652… hypome…
- [38;5;250m6 [39m epi_ma… GSM25… chr19   3.89 [38;5;246me [39m7 3.89 [38;5;246me [39m7   523     3 cg0275… 7.5347… hypome…
- [38;5;246m# … with 6 more variables: pvalue &lt;dbl&gt;, adj_pvalue &lt;dbl&gt;, [39m
- [38;5;246m#   delta_beta &lt;dbl&gt;, epi_region_id &lt;chr&gt;, CRE &lt;chr&gt;, CRE_type &lt;chr&gt;, and [39m
- [38;5;246m#   abbreviated variable names ¹​chromosome, ²​outlier_score, [39m
- [38;5;246m#   ³​outlier_direction [39m</code></pre>
+10 epi_manova_10     3 2.159693e-04 1.187831e-02
+11 epi_manova_11     3 5.786402e-09 3.645433e-07
+12 epi_manova_12     3 3.659987e-06 2.195992e-04
+13 epi_manova_13     3 8.670808e-04 4.682236e-02
+14 epi_manova_14    11 1.383286e-07 1.037465e-05
+15 epi_manova_15     5 2.107632e-05 1.454266e-03</code></pre>
 </div>
 <div class="section level3">
 <h3 id="anotación-de-las-epimutaciones">Anotación de las epimutaciones<a class="anchor" aria-label="anchor" href="#anotaci%C3%B3n-de-las-epimutaciones"></a>
@@ -764,7 +703,7 @@ hypermethylation
 <p>La función <code><a href="https://rdrr.io/pkg/epimutacions/man/annotate_epimutations.html" class="external-link">annotate_epimutations()</a></code> lleva a cabo un
 enriquecimiento de las epimutaciones que se hayan detectado. Aporta
 información sobre:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rst_mvo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/annotate_epimutations.html" class="external-link">annotate_epimutations</a></span><span class="op">(</span><span class="va">epi_mvo</span>, omim <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -803,8 +742,8 @@ reguladora</td>
 </tr>
 </tbody>
 </table>
-<p>Podemos visualizar algunas anotacinoes de la siguiente manera:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<p>Podemos visualizar algunas anotaciones de la siguiente manera:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>    <span class="va">rst_mvo</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">27</span>,<span class="fl">32</span><span class="op">)</span> ,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epi_id"</span>, <span class="st">"cpg_ids"</span>, <span class="st">"Relation_to_Island"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">column_spec</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, width <span class="op">=</span> <span class="st">"4cm"</span><span class="op">)</span></span></code></pre></div>
@@ -845,11 +784,7 @@ N_Shore///N_Shore///N_Shore
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>    <span class="va">rst_mvo</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">8</span>,<span class="fl">22</span><span class="op">)</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epi_id"</span>, <span class="st">"OMIM_ACC"</span>, <span class="st">"OMIM_DESC"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>    row.names <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">column_spec</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, width <span class="op">=</span> <span class="st">"4cm"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>    <span class="va">rst_mvo</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epi_id"</span>, <span class="st">"ensembl_reg_id"</span>, <span class="st">"ensembl_reg_type"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    row.names <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span> <span class="op">%&gt;%</span>  <span class="fu">column_spec</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, width <span class="op">=</span> <span class="st">"4cm"</span><span class="op">)</span></span></code></pre></div>
@@ -923,7 +858,7 @@ CTCF Binding Site
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>    <span class="va">rst_mvo</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GencodeBasicV12_NAME"</span>, <span class="st">"epi_id"</span>, <span class="st">"ensembl_reg_id"</span>, <span class="st">"ensembl_reg_type"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    row.names <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span> <span class="op">%&gt;%</span>  <span class="fu">column_spec</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, width <span class="op">=</span> <span class="st">"4cm"</span><span class="op">)</span></span></code></pre></div>
@@ -1036,20 +971,20 @@ CTCF Binding Site
 su contexto genómico, con los valores de metilación del caso en rojo,
 los de los controles en líneas negras discontínuas y la media de la
 población en azul:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/plot_epimutations.html" class="external-link">plot_epimutations</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">epi_mvo</span><span class="op">[</span><span class="fl">15</span>,<span class="op">]</span><span class="op">)</span>, <span class="va">methy</span><span class="op">)</span></span></code></pre></div>
 <p><img src="epimutacions_cast_files/figure-html/plot_default-1.png" width="700"></p>
-<p>Si ponemos el argumento <code>gene_annot == TRUE</code>, el gráfico
+<p>Si añadimos el argumento <code>gene_annot == TRUE</code>, el gráfico
 incluye también las anotaciones génicas:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/plot_epimutations.html" class="external-link">plot_epimutations</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">epi_mvo</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>, </span>
 <span>                       methy <span class="op">=</span> <span class="va">methy</span>, </span>
 <span>                       genes_annot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <p><img src="epimutacions_cast_files/figure-html/plot_genes_annot-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>Para graficar las marcas de cromatina H3K4me3, H3K27me3 y H3K27ac,
-especifcamos el argumento <code>regulation = TRUE</code>:</p>
+especificamos el argumento <code>regulation = TRUE</code>:</p>
 <ul>
 <li>
 <strong>H3K4me3</strong>: comunmente asociada con la activación de
@@ -1062,11 +997,11 @@ inactivos.</li>
 transcripción y, por lo tanto, definida con una marca de enhancer
 activador.</li>
 </ul>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/epimutacions/man/plot_epimutations.html" class="external-link">plot_epimutations</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">epi_mvo</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>, </span>
 <span>                       methy <span class="op">=</span>  <span class="va">methy</span>, </span>
 <span>                       regulation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <p><img src="epimutacions_cast_files/figure-html/plot_genes_regulation-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
@@ -1080,7 +1015,7 @@ Akano, James Baye, Alejandro Caceres, Pavlo Hrab, Raquel Manzano y
 Margherita Mutarelli. Los autores también quieren agradecer el apoyo de
 la organización del BioHackaton Europeo de 2020.</p>
 <p>Todos los miembros del equipo del <em>Project #5</em> que han
-conribuido a este paquete:</p>
+contribuido a este paquete:</p>
 <table class="table">
 <colgroup>
 <col width="14%">
@@ -1179,7 +1114,7 @@ Enfermedades Raras (CIBERER), Barcelona, Spain; Universitat Pompeu Fabra
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code>R version 4.2.1 (2022-06-23 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)

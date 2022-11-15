@@ -57,7 +57,7 @@ vignette: >
 knitr::opts_chunk$set(comment="", 
                       warning = FALSE, 
                       message = FALSE,
-                      cache = FALSE)
+                      cache = TRUE)
 ```
 
 
@@ -67,7 +67,7 @@ knitr::opts_chunk$set(comment="",
 
 Previamente al desarrollo de este paquete, existían dos enfoques distintos a la
 hora de abordar la detección de epimutaciones en datos de metilación de microarray:
-(1) primero identificar CpGs individualescon valores outlier y después
+(1) primero identificar CpGs individuales con valores outlier y después
 clusterizarlos en epimutaciones [@barbosa2018identification];
 (2) primero definir regiones candidatas con el algoritmo bumphunter y después
 testear la significancia estadística con un MANOVA [@aref2019]. 
@@ -103,7 +103,7 @@ Independientemente de la función que usemos, podremos aplicar cualquiera de los
 métodos anteriormente mencionados, que son:
 (1) Análisis Multivariado de Varianza (`manova`), 
 (2) Modelo Lineal Multivariante (`mlm`), (3) Isolation Forest (`iForest`), 
-(4) Distancia robusta de Mahalanobis (`mahdist`) (5) `quantile` y (6) `beta`.
+(4) Distancia robusta de Mahalanobis (`mahdist`), (5) `quantile` y (6) `beta`.
 
 
 Los métodos `quantile` y `beta` comparan los valores de metilación de cada
@@ -115,7 +115,7 @@ ellos de 1kb [@barbosa2018identification].
 
 Por otro lado, `manova`, `mlm`, `iForest` y  `mahdist` definen primero las regiones
 candidatas (regiones diferencialmente metiladas (DMRs)) con el algoritmo 
-bumphubter[@jaffe2012bump] y después comprueban si en estas DMRs hay suficientes
+bumphunter [@jaffe2012bump] y después comprueban si en estas DMRs hay suficientes
 CpGs outliers.
 
 
@@ -159,7 +159,7 @@ En líneas generales, podemos proporcionar dos tipos de input:
 * (2) Datos crudos de casos + Panel de referencia. Los casos como ficheros `IDAT`
   y el panel de referencia, bien como un objeto `RGChannelSet` o bien
   seleccionando alguno de los que el paquete proporciona como ejemplo 
-  (section \@ref(datasets)). 
+  (sección \@ref(datasets)). 
   Después deberemos hacer un preprocesamiento con la función 
   `epi_preprocess()`para obtener un objeto `GenomicRatioSet`.
 
@@ -188,7 +188,7 @@ query(eh, c("epimutacionsData"))
 methy <- eh[["EH6690"]]
 ```
 
-A parte, tenemos un `GenomicRatioSet` que sólo contiene muestras de casos,
+Aparte, tenemos un `GenomicRatioSet` que sólo contiene muestras de casos,
 lo podemos cargar así:
 
 ```{r}
@@ -198,11 +198,11 @@ data(GRset)
 
 # Preprocesamiento
 
-Cómo nuestros datos ya están preprocesados, este paso no hará falta. 
+Como nuestros datos ya están preprocesados, este paso no hará falta. 
 
-Si tuviesemos datos crudos, la función `epi_preprocess()` permite usar
+Si tuviésemos datos crudos, la función `epi_preprocess()` permite usar
 cualquiera de los 6 métodos de prepocesamiento del paquete `minfi`. Para ello, 
-debemos tener todos los ficheros `IDAT` en un mismo directorio.a función se
+debemos tener todos los ficheros `IDAT` en un mismo directorio. La función se
 usa de la siguiente manera:
 
 ```{r eval = FALSE}
@@ -219,12 +219,12 @@ Dataset_procesado <- epi_preprocess(directorio,
 
 ### Diseño caso-control
 
-Primero usaremos el dataset `methy` (section \@ref(methy)) que contiene muestras
+Primero usaremos el dataset `methy` (sección \@ref(datasets)) que contiene muestras
 de casos y controles. Por lo tanto, usaremos la función `epimutations`.
 Podemos escoger cualquiera de los 6 métodos implementados en el paquete:
 (1) Análisis Multivariado de Varianza (`manova`), 
 (2) Modelo Lineal Multivariante (`mlm`), (3) Isolation Forest (`iForest`), 
-(4) Distancia robusta de Mahalanobis (`mahdist`) (5) `quantile` y (6) `beta`.
+(4) Distancia robusta de Mahalanobis (`mahdist`), (5) `quantile` y (6) `beta`.
 
 Para empezar, cogemos el dataset y separamos los casos de los controles:
 
@@ -251,7 +251,7 @@ dataset, simplemente corremos la función:
 
 
 ```{r eval = FALSE}
-epi_mva_one_leave_out<- epimutations_one_leave_out(GRset,
+epi_mvo_one_leave_out<- epimutations_one_leave_out(GRset,
                                                    method = 'manova')
 ```
 
@@ -358,20 +358,13 @@ argumentos:
 +-----------------------+-----------------------------------------------------------------------------------------------------------------------+
 
 A modo de ejemplo, vamos a visualizar los resultados que hemos obtenido con el 
-método ANOVA y la función `epimutations` (diseño caso-control) - (`epi_mvo`):
+método ANOVA y la función `epimutations` - Diseño caso-control, objeto `epi_mvo`:
 
 ```{r}
 dim(epi_mvo)
 class(epi_mvo)
 head(as.data.frame(epi_mvo), 12)
-epi_mvo[c(10:15),c(12)] <- epi_mvo[c(10:15),c(12)]*10
 as.data.frame(epi_mvo)[c(10:15),c(1,7,11,12)]
-
-kableExtra::kable(
-    epi_mvo[ 9, c(1,2, 7, 10,11,12)],
-    row.names = FALSE ) %>%  column_spec(1:6, width = "4cm")
-
-epi_mvo[epi_mvo$adj_pvalue>0.02,]
 ```
 
 
@@ -403,19 +396,12 @@ rst_mvo <- annotate_epimutations(epi_mvo, omim = FALSE)
 |`ensembl_reg_tissues`      |                                                                                         |
 +---------------------------+-----------------------------------------------------------------------------------------+
 
-Podemos visualizar algunas anotacinoes de la siguiente manera:
+Podemos visualizar algunas anotaciones de la siguiente manera:
 
 ```{r annot_relIsland, eval = TRUE}
 kableExtra::kable(
     rst_mvo[ c(27,32) ,c("epi_id", "cpg_ids", "Relation_to_Island")],
     row.names = FALSE) %>% column_spec(1:3, width = "4cm")
-```
-
-```{r annot_omim, eval = FALSE}
-kableExtra::kable(
-    rst_mvo[ c(4,8,22) , c("epi_id", "OMIM_ACC", "OMIM_DESC")],
-    row.names = FALSE ) %>% column_spec(1:3, width = "4cm")
-    
 ```
 
 ```{r annot_ensembl, eval = TRUE}
@@ -439,7 +425,7 @@ negras discontínuas y la media de la población en azul:
 plot_epimutations(as.data.frame(epi_mvo[15,]), methy)
 ```
 
-Si ponemos el argumento `gene_annot == TRUE`, el gráfico incluye también las
+Si añadimos el argumento `gene_annot == TRUE`, el gráfico incluye también las
 anotaciones génicas:
 
 ```{r, plot_mvo_genes_annot}
@@ -453,7 +439,7 @@ plot(p)
 
 ```
 
-Para graficar las marcas de cromatina H3K4me3, H3K27me3 y H3K27ac, especifcamos
+Para graficar las marcas de cromatina H3K4me3, H3K27me3 y H3K27ac, especificamos
 el argumento `regulation = TRUE`:
 
 
@@ -484,7 +470,7 @@ Raquel Manzano y Margherita Mutarelli.
 Los autores también quieren agradecer el apoyo de la organización del 
 BioHackaton Europeo de 2020.
 
-Todos los miembros del equipo del *Project #5* que han conribuido a este paquete:  
+Todos los miembros del equipo del *Project #5* que han contribuido a este paquete:  
 
 | Name | Surname | ORCID | Affiliation | Team |
 |:-----|:--------|:-----:|:------------|:-----|
