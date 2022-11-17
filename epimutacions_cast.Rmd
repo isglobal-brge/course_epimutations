@@ -215,47 +215,6 @@ Dataset_procesado <- epi_preprocess(directorio,
 
 # Epimutations
 
-## Detección de epimutaciones
-
-### Diseño caso-control
-
-Primero usaremos el dataset `methy` (sección \@ref(datasets)) que contiene muestras
-de casos y controles. Por lo tanto, usaremos la función `epimutations`.
-Podemos escoger cualquiera de los 6 métodos implementados en el paquete:
-(1) Análisis Multivariado de Varianza (`manova`), 
-(2) Modelo Lineal Multivariante (`mlm`), (3) Isolation Forest (`iForest`), 
-(4) Distancia robusta de Mahalanobis (`mahdist`), (5) `quantile` y (6) `beta`.
-
-Para empezar, cogemos el dataset y separamos los casos de los controles:
-
-```{r}
-case_samples <- methy[,methy$status == "case"]
-control_samples <- methy[,methy$status == "control"]
-```
-
-Usaremos el método `manova`. Si quisiéramos, podríamos especificar el cromosoma
-o la región a analizar para reducir el tiempo de ejecución:
-
-```{r,  epi_mvo, message=FALSE, warning=FALSE}
-epi_mvo <- epimutations(case_samples, 
-                        control_samples, 
-                        method = "manova")
-```
-
-
-### Diseño sólo casos
-
-Para analizar el dataset que sólo contiene muestras de casos `GRset`, usaremos
-la función `epimutations_one_leave_out()`. En este caso no hace falta dividir el
-dataset, simplemente corremos la función:
-
-
-```{r eval = FALSE}
-epi_mvo_one_leave_out<- epimutations_one_leave_out(GRset,
-                                                   method = 'manova')
-```
-
-
 ## Parámetros
 
 Cada método de detección tiene sus propios parámetros. Los podemos modificar
@@ -298,7 +257,6 @@ kable(df[,2:3]) %>%
                       "beta" = 2))
 ```
 
-
 Si quisiéramos cambiar algun parámetro, se puede hacer utilizando los argumentos
 que vemos en la tabla. Por ejemplo, para modificar el p-valor de corte de manova:
 
@@ -306,6 +264,48 @@ que vemos en la tabla. Por ejemplo, para modificar el p-valor de corte de manova
 parameters <- epi_parameters(manova = list("pvalue_cutoff" = 0.01))
 parameters$manova$pvalue_cutoff
 ```
+
+
+## Detección de epimutaciones
+
+### Diseño caso-control
+
+Primero usaremos el dataset `methy` (sección \@ref(datasets)) que contiene muestras
+de casos y controles. Por lo tanto, usaremos la función `epimutations`.
+Podemos escoger cualquiera de los 6 métodos implementados en el paquete:
+(1) Análisis Multivariado de Varianza (`manova`), 
+(2) Modelo Lineal Multivariante (`mlm`), (3) Isolation Forest (`iForest`), 
+(4) Distancia robusta de Mahalanobis (`mahdist`), (5) `quantile` y (6) `beta`.
+
+Para empezar, cogemos el dataset y separamos los casos de los controles:
+
+```{r}
+case_samples <- methy[,methy$status == "case"]
+control_samples <- methy[,methy$status == "control"]
+```
+
+Usaremos el método `manova`. Si quisiéramos, podríamos especificar el cromosoma
+o la región a analizar para reducir el tiempo de ejecución:
+
+```{r,  epi_mvo, message=FALSE, warning=FALSE}
+epi_mvo <- epimutations(case_samples, 
+                        control_samples, 
+                        method = "manova")
+```
+
+
+### Diseño sólo casos
+
+Para analizar el dataset que sólo contiene muestras de casos `GRset`, usaremos
+la función `epimutations_one_leave_out()`. En este caso no hace falta dividir el
+dataset, simplemente corremos la función:
+
+
+```{r eval = FALSE}
+epi_mvo_one_leave_out<- epimutations_one_leave_out(GRset,
+                                                   method = 'manova')
+```
+
 
 
 ## Descripción de los resultados:
@@ -364,7 +364,6 @@ método ANOVA y la función `epimutations` - Diseño caso-control, objeto `epi_m
 dim(epi_mvo)
 class(epi_mvo)
 head(as.data.frame(epi_mvo), 12)
-as.data.frame(epi_mvo)[c(10:15),c(1,7,11,12)]
 ```
 
 
@@ -374,7 +373,7 @@ La función `annotate_epimutations()` lleva a cabo un enriquecimiento de las
 epimutaciones que se hayan detectado. Aporta información sobre:
 
 ```{r annot, eval = TRUE}
-rst_mvo <- annotate_epimutations(epi_mvo, omim = FALSE)
+rst_mvo <- annotate_epimutations(epi_mvo)
 ```
 
 
@@ -422,14 +421,14 @@ con los valores de metilación del caso en rojo, los de los controles en líneas
 negras discontínuas y la media de la población en azul:
 
 ```{r plot_default}
-plot_epimutations(as.data.frame(epi_mvo[15,]), methy)
+plot_epimutations(epi_mvo[epi_mvo$epi_id == 'epi_manova_1',], methy)
 ```
 
 Si añadimos el argumento `gene_annot == TRUE`, el gráfico incluye también las
 anotaciones génicas:
 
 ```{r, plot_mvo_genes_annot}
-p <- plot_epimutations(as.data.frame(epi_mvo[1,]), 
+p <- plot_epimutations(as.data.frame(epi_mvo[epi_mvo$epi_id == 'epi_manova_1',]), 
                        methy = methy, 
                        genes_annot = TRUE)
 ```
@@ -451,7 +450,7 @@ lo tanto, definida con una marca de enhancer activador.
 
 
 ```{r, plot_mvo_regulation}
-p <- plot_epimutations(as.data.frame(epi_mvo[1,]), 
+p <- plot_epimutations(as.data.frame(epi_mvo[epi_mvo$epi_id == 'epi_manova_1',]), 
                        methy =  methy, 
                        regulation = TRUE)
 ```
