@@ -6,4 +6,10 @@ Este seminario forma parte del curso "Técnicas ómicas en el diagnóstico de en
 + [Diapositivas](https://isglobal-brge.github.io/course_epimutations/files/PPT_Epimutacions.pdf)
 + [Archivo .R](https://github.com/isglobal-brge/course_epimutations/blob/main/epimutacions_cast.R)
 
+## Diapositivas de los otros cursos impartidos durante las sessiones de iGenCO
+
++ [Plataforma RD-Cat: módulo de datos fenotípicos](https://isglobal-brge.github.io/course_epimutations/files/2022-11-14_iGENCO_WS_LeslieMatalonga.pdf)
++ [Plataforma RD-Cat: módulo de datos genómicos](https://isglobal-brge.github.io/course_epimutations/files/RD-Cat_genomics_GemmaBullich)
+#+ [](https://isglobal-brge.github.io/course_epimutations/files/)
+
 <img src="man/figures/marato.png" align="right" >
