@@ -10,7 +10,7 @@ Material del curso "Técnicas ómicas en el diagnóstico de enfermedades raras" 
 
 ## Diapositivas para la parte de la plataforma RD-Cat:
 
-+ [Descripción del proyecto iGenCO](https://isglobal-brge.github.io/course_epimutations/files/2022-11-14_iGENCO_WS_LeslieMatalonga.pdf)
++ [Descripción del proyecto iGenCO](https://isglobal-brge.github.io/course_epimutations/files/20221116_iGENCO_SergiBeltran_Share.pdf)
 + [Plataforma RD-Cat: módulo de datos fenotípicos](https://isglobal-brge.github.io/course_epimutations/files/2022-11-14_iGENCO_WS_LeslieMatalonga.pdf)
 + [Plataforma RD-Cat: módulo de datos genómicos](https://isglobal-brge.github.io/course_epimutations/files/RD-Cat_genomics_GemmaBullich)
 
