@@ -4,18 +4,18 @@ Material del curso "Técnicas ómicas en el diagnóstico de enfermedades raras" 
 
 ## Material para epimutaciones
 
-+ [Vignette](https://isglobal-brge.github.io/course_epimutations/files/epimutacions_cast.html)
-+ [Diapositivas](https://isglobal-brge.github.io/course_epimutations/files/PPT_Epimutacions.pdf)
-+ [Archivo .R](https://github.com/isglobal-brge/course_epimutations/blob/main/epimutacions_cast.R)
++ [Vignette](https://isglobal-brge.github.io/curso_iGenCO/files/epimutacions_cast.html)
++ [Diapositivas](https://isglobal-brge.github.io/curso_iGenCO/files/PPT_Epimutacions.pdf)
++ [Archivo .R](https://github.com/isglobal-brge/curso_iGenCO/blob/main/epimutacions_cast.R)
 
 ## Diapositivas para la parte de la plataforma RD-Cat:
 
-+ [Descripción del proyecto iGenCO](https://isglobal-brge.github.io/course_epimutations/files/20221116_iGENCO_SergiBeltran_Share.pdf)
-+ [Plataforma RD-Cat: módulo de datos fenotípicos](https://isglobal-brge.github.io/course_epimutations/files/2022-11-14_iGENCO_WS_LeslieMatalonga.pdf)
-+ [Plataforma RD-Cat: módulo de datos genómicos](https://isglobal-brge.github.io/course_epimutations/files/RD-Cat_genomics_GemmaBullich.pdf)
++ [Descripción del proyecto iGenCO](https://isglobal-brge.github.io/curso_iGenCO/files/20221116_iGENCO_SergiBeltran_Share.pdf)
++ [Plataforma RD-Cat: módulo de datos fenotípicos](https://isglobal-brge.github.io/curso_iGenCO/files/2022-11-14_iGENCO_WS_LeslieMatalonga.pdf)
++ [Plataforma RD-Cat: módulo de datos genómicos](https://isglobal-brge.github.io/curso_iGenCO/files/RD-Cat_genomics_GemmaBullich.pdf)
 
 ## Material para RNAseq
 
-+ [Diapositivas](https://isglobal-brge.github.io/course_epimutations/files/Transcriptomics.pdf)
++ [Diapositivas](https://isglobal-brge.github.io/curso_iGenCO/files/Transcriptomics.pdf)
 
 <img src="man/figures/marato.png" align="right" >
