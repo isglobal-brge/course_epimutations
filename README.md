@@ -1,6 +1,6 @@
 # iGenCo: curso técnicas ómicas para el diagnóstico de enfermedades raras <img src="man/figures/logo.png" align="right" >
 
-Material del curso "Técnicas ómicas en el diagnóstico de enfermedades raras" financiado por la Fundació de la Marató de TV3 dentro del proyecto iGenCO (Grant number 504/C/2020). El objetivo del curso es presentar el proyecto iGenCO, describir la Plataforma RD-Cat tanto para el módulo de datos fenotípicos como genotípicos (CNAG), el uso de técnicas ómicas para resolver aquellos casos que no se puede diagnosticar con datos genómicos. Se mostrará cómo usar datos de RNAseq ( ) y de metilación (ISGlobal) usando la librería _epimutacions_ desarrollado por el BRGE (ISGlobal) y que es uno de los deliverables de este proyecto. 
+Material del curso "Técnicas ómicas en el diagnóstico de enfermedades raras" financiado por la Fundació de la Marató de TV3 dentro del proyecto iGenCO (Grant number 504/C/2020). El objetivo del curso es presentar el proyecto [iGenCO](https://www.isglobal.org/-/igenco), describir la Plataforma RD-Cat tanto para el módulo de datos fenotípicos como genotípicos (CNAG), el uso de técnicas ómicas para resolver aquellos casos que no se puede diagnosticar con datos genómicos. Se mostrará cómo usar datos de RNAseq ( ) y de metilación (ISGlobal) usando la librería _epimutacions_ desarrollado por el BRGE (ISGlobal) y que es uno de los deliverables de este proyecto. 
 
 ## Material para epimutaciones
 
